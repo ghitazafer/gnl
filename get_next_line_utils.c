@@ -6,7 +6,7 @@
 /*   By: gzafer <gzafer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/01 14:07:55 by gzafer            #+#    #+#             */
-/*   Updated: 2024/12/01 15:31:24 by gzafer           ###   ########.fr       */
+/*   Updated: 2024/12/02 13:37:21 by gzafer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,7 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	p = (char *)dst;
 	k = (char *)src;
 	if (!dst || !src)
-	{
 		return (NULL);
-	}
 	while (i < n)
 	{
 		p[i] = k[i];

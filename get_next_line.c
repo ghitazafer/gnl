@@ -6,7 +6,7 @@
 /*   By: gzafer <gzafer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/01 14:18:25 by gzafer            #+#    #+#             */
-/*   Updated: 2024/12/01 15:29:40 by gzafer           ###   ########.fr       */
+/*   Updated: 2024/12/02 14:54:11 by gzafer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,8 @@ static char	*returnline(char *stockbuff)
 	while (stockbuff[i] && stockbuff[i] != '\n')
 		i++;
 	if (stockbuff[i] == '\n')
-		line = malloc((i + 2));
-	else
-		line = malloc((i + 1));
+		i++;
+	line = malloc((i + 1));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -48,13 +47,11 @@ static char	*updatedstock(char *stockbuff)
 
 	i = 0;
 	j = 0;
-	if (!stockbuff)
-		return (NULL);
 	while (stockbuff[i] && stockbuff[i] != '\n')
 		i++;
-	if (stockbuff[i] == '\0')
+	if (!stockbuff[i])
 		return (free(stockbuff), NULL);
-	new_stockbuff = malloc(ft_strlen(stockbuff) - i);
+	new_stockbuff = malloc(ft_strlen(stockbuff) - i + 1);
 	if (!new_stockbuff)
 		return (free(stockbuff), NULL);
 	i++;
@@ -71,24 +68,25 @@ static char	*read_buff(int fd, char *stockbuff)
 	int		bytes_read;
 	char	*temp;
 
+	bytes_read = 1;
 	buffer = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buffer)
 		return (free(stockbuff), NULL);
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	while (bytes_read > 0)
+	while (bytes_read != 0)
 	{
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read < 0)
+			return (free(buffer), NULL);
 		buffer[bytes_read] = '\0';
-		temp = ft_strjoin(stockbuff, buffer);
-		if (!temp)
-			return (free(stockbuff), free(buffer), NULL);
-		stockbuff = temp;
+		temp = stockbuff;
+		stockbuff = ft_strjoin(stockbuff, buffer);
+		if (!stockbuff)
+			return (free(temp), free(buffer), NULL);
+		free (temp);
 		if (ft_strchr(stockbuff, '\n'))
 			break ;
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	if (bytes_read < 0)
-		return (free(stockbuff), NULL);
 	return (stockbuff);
 }
 
@@ -98,14 +96,14 @@ char	*get_next_line(int fd)
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || fd > OPEN_MAX
-		|| BUFFER_SIZE > INT_MAX)
-		return (NULL);
+		|| read(fd, NULL, 0) == -1 || BUFFER_SIZE > INT_MAX)
+		return (free(stockbuff), stockbuff = NULL, NULL);
 	stockbuff = read_buff(fd, stockbuff);
 	if (!stockbuff)
 		return (free(stockbuff), stockbuff = NULL, NULL);
 	line = returnline(stockbuff);
-	if (!line || *line == '\0')
-		return (free(line), line = NULL, NULL);
+	if (!line || *line == 0)
+		return (free(stockbuff), stockbuff = NULL, NULL);
 	stockbuff = updatedstock(stockbuff);
 	return (line);
 }
