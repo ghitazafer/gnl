@@ -103,7 +103,7 @@ char	*get_next_line(int fd)
 		return (free(stockbuff), stockbuff = NULL, NULL);
 	line = returnline(stockbuff);
 	if (!line || *line == 0)
-		return (free(stockbuff), stockbuff = NULL, NULL);
+		return (NULL);
 	stockbuff = updatedstock(stockbuff);
 	return (line);
 }
