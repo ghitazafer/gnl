@@ -95,7 +95,8 @@ char	*get_next_line(int fd)
 	static char	*stockbuff[OPEN_MAX];
 	char		*line;
 
-	if (BUFFER_SIZE <= 0 || read(fd, NULL, 0) == -1 || BUFFER_SIZE > INT_MAX)
+	if (BUFFER_SIZE <= 0 || read(fd, NULL, 0) == -1 || fd > OPEN_MAX || fd < 0
+		|| BUFFER_SIZE > INT_MAX)
 		return (NULL);
 	stockbuff[fd] = read_buff(fd, &stockbuff[fd]);
 	if (!stockbuff[fd])
